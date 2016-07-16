@@ -1,0 +1,34 @@
+/**
+ * @file: Styles for MozTut
+ * @author: Nick Pershin
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    padding: 10px 40px;
+}
+
+/*
+button,
+input[type=button] {
+    padding: 10px;
+    cursor: pointer;
+    outline: none;
+    background-color: #9F9;
+}
+*/
+
+canvas {
+	border: 1px solid black;
+	background-color: black;
+    width: 640px;
+    height: 480px;
+}
+
+video {
+	display: none;
+}
