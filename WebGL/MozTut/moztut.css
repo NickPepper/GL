@@ -23,12 +23,12 @@ input[type=button] {
 */
 
 canvas {
-	border: 1px solid black;
-	background-color: black;
+    border: 1px solid black;
+    background-color: black;
     width: 640px;
     height: 480px;
 }
 
 video {
-	display: none;
+    display: none;
 }
