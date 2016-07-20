@@ -8,6 +8,10 @@
     "use strict";
 
     var DEBUG                   = true, // switch the debug info on/off
+        C_WIDTH                 = 640.0,
+        C_HEIGHT                = 480.0,
+        H_ASPECT                = C_HEIGHT / C_WIDTH,
+        V_ASPECT                = C_WIDTH / C_HEIGHT,
         WebGL_Controller        = function(canvasID) {
             if (this instanceof WebGL_Controller) {
                 if(!canvasID) {
@@ -18,6 +22,9 @@
                 this.gl                         = null;
                 this.shaderProgram              = null;
                 this.vertexPositionAttribute    = null;
+                this.squareVerticesBuffer       = null;
+                this.perspectiveMatrix          = null;
+                this.mvMatrix                   = null;
                 this.canvas                     = doc.getElementById(canvasID);
                 if(!this.canvas) {
                     throw new Error("WebGL_Controller\'s constructor :: couldn't get node with ID: " + canvasID);
@@ -44,6 +51,10 @@
                 if(ish.status == "ERROR") {
                     throw new Error(ish.error);
                 }
+                // init buffers
+                this.initBuffers(this.gl);
+                // draw scene
+                this.drawScene(this.gl);
 
                 DEBUG && win.console && console.log('an instance of WebGL_Controller created OK');
 
@@ -55,6 +66,34 @@
 
 
     WebGL_Controller.prototype = {
+
+        /**
+         * Some utility methods.
+         * TODO: REFACTORING: move from prototype to separate file/object? ;)
+         */
+        loadIdentity: function() {
+            this.mvMatrix = Matrix.I(4);
+        },
+
+        multMatrix: function(m) {
+            this.mvMatrix = this.mvMatrix.x(m);
+        },
+
+        mvTranslate: function(v) {
+            this.multMatrix(Matrix.Translation($V([v[0], v[1], v[2]])).ensure4x4());
+        },
+
+        /**
+         * @param {Object}      gl context
+         */
+        setMatrixUniforms: function(gl) {
+            var pUniform = gl.getUniformLocation(this.shaderProgram, "uPMatrix");
+            gl.uniformMatrix4fv(pUniform, false, new Float32Array(this.perspectiveMatrix.flatten()));
+
+            var mvUniform = gl.getUniformLocation(this.shaderProgram, "uMVMatrix");
+            gl.uniformMatrix4fv(mvUniform, false, new Float32Array(this.mvMatrix.flatten()));
+        },
+
 
         /**
          * Initialize the WebGL.
@@ -157,6 +196,44 @@
             this.gl.enableVertexAttribArray(this.vertexPositionAttribute);
 
             return {status: "OK", error: null};
+        },
+
+
+        /**
+         * Init GL buffers.
+         * @param {Object}  gl context
+         */
+        initBuffers: function(gl) {
+            this.squareVerticesBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVerticesBuffer);
+  
+            var vertices = [
+                1.0,  1.0,  0.0,
+                -1.0, 1.0,  0.0,
+                1.0,  -1.0, 0.0,
+                -1.0, -1.0, 0.0
+            ];
+  
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        },
+
+
+        /**
+         * Draw scene.
+         * @param {Object}  gl context
+         */
+        drawScene: function(gl) {
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+              
+            this.perspectiveMatrix = makePerspective(45, V_ASPECT, 0.1, 100.0);
+              
+            this.loadIdentity();
+            this.mvTranslate([-0.0, 0.0, -6.0]);
+              
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVerticesBuffer);
+            gl.vertexAttribPointer(this.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+            this.setMatrixUniforms(gl);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         },
 
 
