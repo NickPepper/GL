@@ -17,7 +17,10 @@
                 if(!this.canvas) {
                     throw new Error("WebGL_Controller\'s constructor :: couldn't get node with ID: " + canvasID);
                 }
+                
+                ///////////////
                 // init WebGL
+                ///////////////
                 this.gl = null;
                 try {
                     // try to grab the standard context - if it fails, fallback to experimental
