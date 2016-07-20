@@ -20,7 +20,7 @@
     </canvas>
 
     <!-- Vertex shader (provides the clipspace coordinates) -->
-    <script id="shader-vs" type="x-shader/x-vertex">
+    <script id="shader_vs" type="x-shader/x-vertex">
         attribute vec3 aVertexPosition;
         uniform mat4 uMVMatrix;
         uniform mat4 uPMatrix;
@@ -30,7 +30,7 @@
     </script>
 
     <!-- Fragment shader (provides the color) -->
-    <script id="shader-fs" type="x-shader/x-fragment">
+    <script id="shader_fs" type="x-shader/x-fragment">
         void main(void) {
             gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
         }
