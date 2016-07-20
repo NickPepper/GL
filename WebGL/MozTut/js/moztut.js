@@ -94,6 +94,39 @@
             gl.uniformMatrix4fv(mvUniform, false, new Float32Array(this.mvMatrix.flatten()));
         },
 
+        /**
+         * Detect if the parameter is a natural number.
+         * @return {Boolean}
+         */
+        isNaturalNumber: function(n) {
+            return typeof n === 'number' && n%1 === 0;
+        },
+
+        /**
+         * Warn if the parameter is a 'safe' Integer.
+         */
+        isSafeInteger: function(n) {
+            return Math.abs(n) <= 9007199254740991; // ( 9007199254740991 == Math.pow(2, 53) - 1 )
+        },
+
+        /**
+         * Check the 'value' parameter for following:
+         * - finite number ?
+         * - natural number ?
+         * - safe Integer ?
+         *
+         * @param name {String}
+         * @param value {Number?}
+         */
+        checkIntParam: function(name, value) {
+            if(!isFinite(value) || !this.isNaturalNumber(value)) {
+                throw new TypeError(name + ' must be finite Integer!');
+            }
+            if(!this.isSafeInteger(value)) {
+                throw new Error(name + ' is not the safe Integer!');
+            }
+        },
+
 
         /**
          * Initialize the WebGL.
@@ -234,42 +267,7 @@
             gl.vertexAttribPointer(this.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
             this.setMatrixUniforms(gl);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-        },
-
-
-
-        /**
-         * Detect if the parameter is a natural number.
-         * @return {Boolean}
-         */
-        // isNaturalNumber: function(n) {
-        //     return typeof n === 'number' && n%1 === 0;
-        // },
-
-        /**
-         * Warn if the parameter is a 'safe' Integer.
-         */
-        // isSafeInteger: function(n) {
-        //     return Math.abs(n) <= 9007199254740991; // ( 9007199254740991 == Math.pow(2, 53) - 1 )
-        // },
-
-        /**
-         * Check the 'value' parameter for following:
-         * - finite number ?
-         * - natural number ?
-         * - safe Integer ?
-         *
-         * @param name {String}
-         * @param value {Number?}
-         */
-        // checkIntParam: function(name, value) {
-        //     if(!isFinite(value) || !this.isNaturalNumber(value)) {
-        //         throw new TypeError(name + ' must be finite Integer!');
-        //     }
-        //     if(!this.isSafeInteger(value)) {
-        //         throw new Error(name + ' is not the safe Integer!');
-        //     }
-        // }
+        }
 
 
     };
